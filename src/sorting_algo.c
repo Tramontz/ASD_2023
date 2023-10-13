@@ -14,10 +14,9 @@ void print_element(void *elem) {
 }
 
 int binary_search(void *arr, void *item, int low, int high, CompareFunction compare, size_t elementSize) {
-    printf("Low: %d, High: %d\n", low, high);
     if (high <= low){
-        printf("arr: %p, low: %d, elementSize: %zu\n", arr, low, elementSize);
-        printf("item: %p\n", item);
+        printf("DEBUG: arr: %p, low: %d, elementSize: %zu\n", arr, low, elementSize);
+        printf("DEBUG: item: %p\n", item);
         return (compare(item, arr + low * elementSize) > 0) ? (low + 1) : low ;
     }
 

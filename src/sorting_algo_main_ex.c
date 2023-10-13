@@ -66,15 +66,9 @@ static int precedes_record_string_field( void* r1_p,  void* r2_p) {
     fprintf(stderr, "precedes_record_string_field: one of the parameters is a null pointer\n");
     exit(EXIT_FAILURE);
   }
-  printf("r1_p: %p\n", r1_p);
-  printf("r2_p: %p\n", r2_p);
 
   struct record* rec1_p = r1_p;
   struct record* rec2_p = r2_p;
-  printf("rec1_p: %p\n", rec1_p);
-  printf("rec2_p: %p\n", rec2_p);
-  printf("Record 1: ID=%d",rec1_p->id);
-  printf("Record 2: ID=%d, ", rec2_p->id);
 
   printf("Record 1: ID=%d, String=%s, Integer=%d, Float=%f\n", rec1_p->id, rec1_p->string_field_1, rec1_p->integer_field_2, rec1_p->float_field_3);
   sleep(1);
@@ -82,7 +76,7 @@ static int precedes_record_string_field( void* r1_p,  void* r2_p) {
   sleep(20);
 
     // Usa strcmp per confrontare le stringhe e restituisci il risultato
-    return; //strcmp(rec1_p->string_field_1, rec2_p->string_field_1);
+    return; strcmp(rec1_p->string_field_1, rec2_p->string_field_1);
   }
 
 /*It takes as input two pointers to struct record.
@@ -124,7 +118,7 @@ the float field of the second one (0 otherwise)
         exit(EXIT_FAILURE);
       }   
       strcpy(read_line_p,buffer);   
-      printf("inizio a leggere: Read Line: %s\n", read_line_p);
+      printf("Start to read: Read Line: %s\n", read_line_p);
       char *id_field_in_read_line_p = strtok(read_line_p,",");
       char *string_field_in_read_line_p = strtok(NULL,",");  
       char *integer_field_in_read_line_p = strtok(NULL,","); 
@@ -155,10 +149,10 @@ the float field of the second one (0 otherwise)
         exit(EXIT_FAILURE);
       }
       strcpy(record_p->string_field_1, string_field);
-      printf("sto aggiungendo la stringa: %s\n", record_p->string_field_1);
-      printf("IN POSIZIONE%d\n", struct_array_size(array));
-      struct_array_add(array, record_p);
-      printf("SIZE DELL'ARRAY%d\n\n\n\n", struct_array_size(array));
+      printf("ADDING STRING: %s\n", record_p->string_field_1);
+      printf("POSITION%d\n", struct_array_size(array));
+      struct_array_add(array, (void*)record_p);
+      printf("SIZE ARRAY%d\n\n\n\n", struct_array_size(array));
 
       free(read_line_p);
     }
@@ -193,13 +187,12 @@ the float field of the second one (0 otherwise)
     StructArray* array = struct_array_create();
     load_array(infile, array);
     print_array(array);
-    printf("prima dello switch\n");
-    printf("quanti elementi ha array? %d\n", struct_array_size(array));
+    printf("TOTAL ELEMENT IN THE ARRAY %d\n", struct_array_size(array));
 
     switch (field) {
     case 1:
       merge_binary_insertion_sort(struct_array_get(array,0), struct_array_size(array), sizeof(struct record), k, precedes_record_string_field);
-      printf("selezione per char");
+      printf("CHAR SELECTION");
       break;
     case 2:
       merge_binary_insertion_sort(array, struct_array_size(array), sizeof(int), k, precedes_record_int_field);
@@ -233,14 +226,14 @@ the float field of the second one (0 otherwise)
     char* outFile[1024];
 
     do {
-      printf("Seleziona il campo per l'ordinamento:\n1. Campo Stringa\n2. Campo Intero\n3. Campo Float\n");
+      printf("SELECT ORDERING FIELD:\n1. STRING\n2. INT\n3. CHAR\n");
       scanf("%d", &field);
     } while (field < 1 || field > 3);
 
-    printf("Inserisci il percorso del file di output: ");
+    printf("OUTPUT FILE PATH(let empty, must implement whriting file subroutine): ");
     scanf("%s", outFile);
 
-    printf("Inserisci un valore appropriato per 'k': ");
+    printf("K VALUE(if K value is highest than the array's lenght, it will use only binary insertion sort): ");
     scanf("%lu", &k);
 
     sort_records(argv[1], outFile, k, field);
