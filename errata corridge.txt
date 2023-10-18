@@ -1,0 +1,12 @@
+Commit 18/10
+
+Ho aggiunto typedef e revisionato le routine della StructArray add e get
+la stampa degli elementi dell'array dopo che li ho aggiunti funziona, ma il programma si blocca alla prima invocazione del compare per le stringhe
+
+la mia idea è che il problema sia come gestisco gli indirizzi dei void all'itnerno del merge bin insertion sort, ma non capisco dove sbaglio
+anche perchè se lanci i test, passano tutti, sono array primitivi è vero, ma vengono comunque passati come void...
+
+se lanci .\sorting_algo_tests.exe partono i test automatici
+se lanci .\sorting_algo_main_ex.exe c:\profili\u381672\Desktop\unito\records.csv e selezioni 1, parte l'oridnamento dei 50 record nel csv
+
+per buildare, basta che ti posizioni nella direcotory padre, dove hai la dir src/ e il makefile, e lanci make all

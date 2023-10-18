@@ -8,12 +8,12 @@
 in this case, i decided to use double typer for the floating point field 
 as common practice to have more precision.
 */
-struct record{
+typedef struct{
   int id;
   char* string_field_1;
   int integer_field_2;
   double float_field_3;
-};
+}record;
 
 
 /*It takes as input two pointers to struct record.
@@ -29,8 +29,8 @@ static int precedes_record_int_field(void* r1_p,void* r2_p){
     fprintf(stderr,"precedes_record_int_field: the second parameter is a null pointer");
     exit(EXIT_FAILURE);
   }
-  struct record *rec1_p = (struct record*)r1_p;
-  struct record *rec2_p = (struct record*)r2_p;
+   record *rec1_p = ( record*)r1_p;
+   record *rec2_p = ( record*)r2_p;
   if(rec1_p->integer_field_2 < rec2_p->integer_field_2){
     return(1);
   }
@@ -67,8 +67,8 @@ static int precedes_record_string_field( void* r1_p,  void* r2_p) {
     exit(EXIT_FAILURE);
   }
 
-  struct record* rec1_p = r1_p;
-  struct record* rec2_p = r2_p;
+   record* rec1_p = (record*) r1_p;
+   record* rec2_p = (record*)r2_p;
 
   printf("Record 1: ID=%d, String=%s, Integer=%d, Float=%f\n", rec1_p->id, rec1_p->string_field_1, rec1_p->integer_field_2, rec1_p->float_field_3);
   sleep(1);
@@ -92,8 +92,8 @@ the float field of the second one (0 otherwise)
       fprintf(stderr,"precedes_record_float_field: the second parameter is a null pointer");
       exit(EXIT_FAILURE);
     }
-    struct record *rec1_p = (struct record*)r1_p;
-    struct record *rec2_p = (struct record*)r2_p;
+     record *rec1_p = ( record*)r1_p;
+     record *rec2_p = ( record*)r2_p;
     if(rec1_p->float_field_3 < rec2_p->float_field_3){
       return(1);
     }
@@ -132,8 +132,7 @@ the float field of the second one (0 otherwise)
       int id_field = atoi(id_field_in_read_line_p);
       int integer_field = atoi(integer_field_in_read_line_p);
       double float_field = strtod(float_field_in_read_line_p,NULL);  
-
-      struct record *record_p = malloc(sizeof(struct record));
+      record *record_p = malloc(sizeof(record));
       if(record_p == NULL){
         fprintf(stderr,"main: unable to allocate memory for the read record");
         exit(EXIT_FAILURE);
@@ -151,7 +150,7 @@ the float field of the second one (0 otherwise)
       strcpy(record_p->string_field_1, string_field);
       printf("ADDING STRING: %s\n", record_p->string_field_1);
       printf("POSITION%d\n", struct_array_size(array));
-      struct_array_add(array, (void*)record_p);
+      struct_array_add(array, record_p);
       printf("SIZE ARRAY%d\n\n\n\n", struct_array_size(array));
 
       free(read_line_p);
@@ -163,7 +162,7 @@ the float field of the second one (0 otherwise)
   static  void free_array(StructArray* array) {
     unsigned long  el_num =  struct_array_size(array);
     for(unsigned long i=0;i<el_num;i++){
-      struct record *array_element = (struct record *)struct_array_get(array, i);
+       record *array_element = (record *)struct_array_get(array, i);
       free(array_element->string_field_1);
       free(array_element);
     }
@@ -172,13 +171,12 @@ the float field of the second one (0 otherwise)
 
   static  void print_array(StructArray* array){
     unsigned long el_num =  struct_array_size(array);
-
-    struct record *array_element;
+    record *array_element=malloc(sizeof (record));
 
     printf("\nstruct ARRAY OF RECORDS\n");
 
     for(unsigned long i=0;i<el_num;i++){
-      array_element = (struct record *)struct_array_get(array, i);
+      array_element = (record *)struct_array_get(array, i);
       printf("<POSIZION:%d, ID:%d, String:%s, Integer:%d, Float:%lf >\n",i,array_element->id,array_element->string_field_1,array_element->integer_field_2,array_element->float_field_3); 
     }
   }
@@ -191,7 +189,7 @@ the float field of the second one (0 otherwise)
 
     switch (field) {
     case 1:
-      merge_binary_insertion_sort(struct_array_get(array,0), struct_array_size(array), sizeof(struct record), k, precedes_record_string_field);
+      merge_binary_insertion_sort(struct_array_get(array,0), struct_array_size(array), sizeof(record), k, precedes_record_string_field);
       printf("CHAR SELECTION");
       break;
     case 2:
@@ -222,7 +220,7 @@ the float field of the second one (0 otherwise)
     }
 
     int field = 0;
-    size_t k = 0;
+    size_t k = 500;
     char* outFile[1024];
 
     do {
@@ -230,11 +228,12 @@ the float field of the second one (0 otherwise)
       scanf("%d", &field);
     } while (field < 1 || field > 3);
 
-    printf("OUTPUT FILE PATH(let empty, must implement whriting file subroutine): ");
-    scanf("%s", outFile);
+    //printf("OUTPUT FILE PATH(let empty, must implement whriting file subroutine): ");
+    //scanf("%s", outFile);
 
-    printf("K VALUE(if K value is highest than the array's lenght, it will use only binary insertion sort): ");
-    scanf("%lu", &k);
+
+    //printf("K VALUE(if K value is highest than the array's lenght, it will use only binary insertion sort): ");
+    //scanf("%lu", &k);
 
     sort_records(argv[1], outFile, k, field);
 
