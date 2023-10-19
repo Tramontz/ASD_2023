@@ -1,4 +1,5 @@
 # gnore where matches any files and directories produced after building
 bin/
 build/
+src/*_old.*
 
