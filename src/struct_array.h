@@ -33,7 +33,7 @@ void struct_array_add(StructArray *, void*);
 //it returns the pointer to the i-th element of the struct array
 //The first parameter cannot be NULL; the second parameter must be a valid position 
 //within the orderd array.
-void* struct_array_get(StructArray *, unsigned long);
+void* struct_array_get(StructArray *);
 
 //It accepts as input a pointer to an struct array and an integer "index" and
 //it set the value in the index position to passed element 

@@ -81,16 +81,12 @@ void struct_array_add(StructArray *struct_array, void* element){
 }
 
 
-void* struct_array_get(StructArray *struct_array, unsigned long index){
+void* struct_array_get(StructArray *struct_array){
   if(struct_array == NULL){
     fprintf(stderr,"struct_array_get: struct_array parameter cannot be NULL");
     exit(EXIT_FAILURE);
   }
-  if(index>=struct_array->el_num){
-    fprintf(stderr,"struct_array_get: Index %lu is out of the array bounds",index);
-    exit(EXIT_FAILURE);
-  }
-  return (struct_array->array)[index];
+  return (struct_array->array);
 }
 
 void struct_array_set(StructArray *struct_array, unsigned long index, void* element){

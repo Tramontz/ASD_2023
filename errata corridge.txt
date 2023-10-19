@@ -10,3 +10,12 @@ se lanci .\sorting_algo_tests.exe partono i test automatici
 se lanci .\sorting_algo_main_ex.exe c:\profili\u381672\Desktop\unito\records.csv e selezioni 1, parte l'oridnamento dei 50 record nel csv
 
 per buildare, basta che ti posizioni nella direcotory padre, dove hai la dir src/ e il makefile, e lanci make all
+
+
+COMMIT 19/10
+
+riscritto il codice con la logica dell'array di puntatori void, passando a paramentro void** invece che void*, niente calcoli sull'aritmetica delle aree di memoria, 
+accedo ai dati richiamando direttamente array [i]
+test:ok
+main: conclude senza rompersi, ma a quanto pare non ordina, da controllare se i puntamenti agli elementi di records[i] sono corretti e vengono swappati
+quando nei comparator passo come compare records[1], records[2]

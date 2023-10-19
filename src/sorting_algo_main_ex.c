@@ -41,40 +41,19 @@ static int precedes_record_int_field(void* r1_p,void* r2_p){
 It returns 1 if the string field of the first record is less than 
 the string field of the second one (0 otherwise)
 */
-/*static int precedes_record_string_field(void* r1_p,void* r2_p){
-  printf("sono nel precede1\n");
-  if(r1_p == NULL){
-    fprintf(stderr,"precedes_string: the first parameter is a null pointer");
-    exit(EXIT_FAILURE);
-  }
-  if(r2_p == NULL){
-    fprintf(stderr,"precedes_string: the second parameter is a null pointer");
-    exit(EXIT_FAILURE);
-  }
-  struct record *rec1_p = (struct record*)r1_p;
-  struct record *rec2_p = (struct record*)r2_p;
-   printf("Record 1: ID=%d, String=%s, Integer=%d, Float=%lf\n", rec1_p->id, rec1_p->string_field_1, rec1_p->integer_field_2, rec1_p->float_field_3);
-    printf("Record 2: ID=%d, String=%s, Integer=%d, Float=%lf\n", rec2_p->id, rec2_p->string_field_1, rec2_p->integer_field_2, rec2_p->float_field_3);
 
-  if(strcmpi(rec1_p->string_field_1,rec2_p->string_field_1)<0){
-    return(1);
-  }
-  return(0);
-}*/
-static int precedes_record_string_field( void* r1_p,  void* r2_p) {
+static int precedes_record_string_field( const void* r1_p,  const void* r2_p) {
   if (r1_p == NULL || r2_p == NULL) {
     fprintf(stderr, "precedes_record_string_field: one of the parameters is a null pointer\n");
     exit(EXIT_FAILURE);
   }
 
-   record* rec1_p = (record*) r1_p;
-   record* rec2_p = (record*)r2_p;
+   const record* rec1_p = (const record*)r1_p;
+   const record* rec2_p = (const record*)r2_p;
 
   printf("Record 1: ID=%d, String=%s, Integer=%d, Float=%f\n", rec1_p->id, rec1_p->string_field_1, rec1_p->integer_field_2, rec1_p->float_field_3);
-  sleep(1);
   printf("Record 2: ID=%d, String=%s, Integer=%d, Float=%f\n", rec2_p->id, rec2_p->string_field_1, rec2_p->integer_field_2, rec2_p->float_field_3);
-  sleep(20);
-
+printf("comparator %d\n",strcmp(rec1_p->string_field_1, rec2_p->string_field_1));
     // Usa strcmp per confrontare le stringhe e restituisci il risultato
     return; strcmp(rec1_p->string_field_1, rec2_p->string_field_1);
   }
@@ -162,8 +141,8 @@ the float field of the second one (0 otherwise)
   static  void free_array(StructArray* array) {
     unsigned long  el_num =  struct_array_size(array);
     for(unsigned long i=0;i<el_num;i++){
-       record *array_element = (record *)struct_array_get(array, i);
-      free(array_element->string_field_1);
+       record **array_element = (record *)struct_array_get(array);
+      free(array_element[i]->string_field_1);
       free(array_element);
     }
     struct_array_free_memory(array);
@@ -172,33 +151,31 @@ the float field of the second one (0 otherwise)
   static  void print_array(StructArray* array){
     unsigned long el_num =  struct_array_size(array);
     record *array_element=malloc(sizeof (record));
-
+    void ** record_array=struct_array_get(array);
     printf("\nstruct ARRAY OF RECORDS\n");
 
     for(unsigned long i=0;i<el_num;i++){
-      array_element = (record *)struct_array_get(array, i);
+      array_element = (record *)record_array[i];
       printf("<POSIZION:%d, ID:%d, String:%s, Integer:%d, Float:%lf >\n",i,array_element->id,array_element->string_field_1,array_element->integer_field_2,array_element->float_field_3); 
     }
   }
 
-  static void sort_records(FILE *infile, FILE *outfile, size_t k, size_t field) {
-    StructArray* array = struct_array_create();
-    load_array(infile, array);
-    print_array(array);
+  static void sort_records(StructArray* array, size_t k, size_t field) {
+
     printf("TOTAL ELEMENT IN THE ARRAY %d\n", struct_array_size(array));
 
     switch (field) {
     case 1:
-      merge_binary_insertion_sort(struct_array_get(array,0), struct_array_size(array), sizeof(record), k, precedes_record_string_field);
+      merge_binary_insertion_sort(struct_array_get(array), struct_array_size(array), k, precedes_record_string_field);
       printf("CHAR SELECTION");
       break;
     case 2:
-      merge_binary_insertion_sort(array, struct_array_size(array), sizeof(int), k, precedes_record_int_field);
+      merge_binary_insertion_sort(array, struct_array_size(array),  k, precedes_record_int_field);
       printf("selezione per int");
 
       break;
     case 3:
-      merge_binary_insertion_sort(array, struct_array_size(array), sizeof(double), k, precedes_record_float_field);
+      merge_binary_insertion_sort(array, struct_array_size(array), k, precedes_record_float_field);
       printf("selezione per float");
 
       break;
@@ -207,9 +184,7 @@ the float field of the second one (0 otherwise)
           // Qui inserisci il codice per gestire un'opzione non valida
       break;
     }  
-    print_array(array);
-  //da creare infile outfile;
-    free_array(array);
+
   }
 
 //It should be invoked with one parameter specifying the filepath of the data file
@@ -220,7 +195,7 @@ the float field of the second one (0 otherwise)
     }
 
     int field = 0;
-    size_t k = 500;
+    size_t k = 0;
     char* outFile[1024];
 
     do {
@@ -228,31 +203,12 @@ the float field of the second one (0 otherwise)
       scanf("%d", &field);
     } while (field < 1 || field > 3);
 
-    //printf("OUTPUT FILE PATH(let empty, must implement whriting file subroutine): ");
-    //scanf("%s", outFile);
+    StructArray* array = struct_array_create();    
+    load_array(argv[1], array);
+      merge_binary_insertion_sort(struct_array_get(array), struct_array_size(array), k, precedes_record_string_field);
+    print_array(array);
 
-
-    //printf("K VALUE(if K value is highest than the array's lenght, it will use only binary insertion sort): ");
-    //scanf("%lu", &k);
-
-    sort_records(argv[1], outFile, k, field);
-
+  //da creare infile outfile;
+    free_array(array);
     return EXIT_SUCCESS;
-
-/*struct record *record_p = malloc(sizeof(struct record));
-struct record *record_t = malloc(sizeof(struct record));
-
-  StructArray* array = struct_array_create();
-    record_p->id = 01;
-    record_p->string_field_1 = "prova";
-    record_p->integer_field_2 = 40;
-    record_p->float_field_3 = 12.33;
-struct_array_add(array,record_p);
-record_t=struct_array_get(array,0);
-printf("%s\n", record_p->string_field_1);
-printf("%d\n", record_p->integer_field_2);
-printf("%f\n", record_p->float_field_3);
-free(record_p);
-free(record_t);
-free(array);*/
   }
