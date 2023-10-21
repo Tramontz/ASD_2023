@@ -146,7 +146,7 @@ static  void free_array(StructArray* array) {
 
 static void write_array(char* path, StructArray *array){
   printf("writing file...\n");
-  FILE *ordered = fopen(strcat(path,"ordered.csv"), "w");
+  FILE *ordered = fopen(path, "w");
   record *array_element=malloc(sizeof (record));
   void ** record_array=struct_array_get(array);    
   for (int i = 0; i < struct_array_size(array); i++){
@@ -219,7 +219,7 @@ int main(int argc, char const *argv[]) {
   StructArray* array = struct_array_create();    
   load_array(argv[1], array);
   clock_t begin = clock();
-  sort_records(array, k, size_t field);
+  sort_records(array, k, field);
   clock_t end = clock();
   printf("total time: %f\n",(double)(end-begin)/CLOCKS_PER_SEC); 
   write_array(argv[2],array);

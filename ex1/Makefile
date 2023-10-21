@@ -13,8 +13,8 @@ build/%.o: src/%.c $(COMMON_DEPS)
 bin/sorting_algo_tests: build/sorting_algo.o  build/sorting_algo_tests.o build/unity.o $(COMMON_DEPS)
 	$(CC) -o bin/sorting_algo_tests build/sorting_algo.o build/sorting_algo_tests.o build/unity.o 
 
-bin/sorting_algo_main_ex: build/struct_array.o build/sorting_algo.o build/sorting_algo_main_ex.o $(COMMON_DEPS)
-	$(CC) -o bin/sorting_algo_main_ex build/struct_array.o build/sorting_algo.o build/sorting_algo_main_ex.o
+bin/sorting_algo_main_ex: build/struct_array.o build/sorting_algo.o build/main_ex1.o $(COMMON_DEPS)
+	$(CC) -o bin/main_ex1 build/struct_array.o build/sorting_algo.o build/main_ex1.o
 
 clean:
 	rm -f build/* bin/* 
