@@ -8,19 +8,15 @@
 #define SWAP_DIMENSION 60
 #endif
 
-void merge_binary_insertion_sort(void **base, size_t nitems, size_t k, int (*comparator)(const void*, const void*))
-{
-    if (base == NULL || comparator == NULL)
-    {
+void merge_binary_insertion_sort(void **base, size_t nitems, size_t k, int (*comparator)(const void*, const void*)){
+    if (base == NULL || comparator == NULL){
         printf("<a> and <comparator> cannot be NUll\n");
         return;
     }
-    if (nitems < 0)
-    {
+    if (nitems < 0){
         printf("<start> and <end> cannot be negative\n");
         return;
     }
-    printf("sono nel merge_binary_insertion_sort\n" );
     merge_sort(base, 0, nitems - 1, k, comparator);
 }
 
@@ -28,16 +24,15 @@ void insertion_sort(void **a, int start, int end, int (*comparator)(const void*,
 
     int i, index, j;
 
-    for (i = (start + 1); i <= end; ++i)
-    {printf("ciclo for: %d\n",i);
+    for (i = (start + 1); i <= end; ++i){
 
         j = i - 1;
 
         void *item = a[i];
 
         index = binary_search(a, item, start, j, comparator);
-        while (j >= index)
-        {
+
+        while (j >= index){
             a[j + 1] = a[j];
             j--;
         }
@@ -61,15 +56,15 @@ int binary_search(void **a, void *item, int left, int right, int (*comparator)(c
 }
 
 void merge_sort(void **a, int start, int end, size_t k, int (*comparator)(const void*, const void*)){
-   if (start < end){
-if (end - start +1 <= k)  {  
-    insertion_sort(a, start, end, comparator);
-    }else{
-        int middle_i = start + ((end - start) / 2);
-        merge_sort(a, start, middle_i,k, comparator);
-        merge_sort(a, middle_i + 1, end,k, comparator);
-        merge(a, start, middle_i, end, comparator);
-    }
+    if (start < end){
+        if (end - start +1 <= k){  
+            insertion_sort(a, start, end, comparator);
+        }else{
+            int middle_i = start + ((end - start) / 2);
+            merge_sort(a, start, middle_i,k, comparator);
+            merge_sort(a, middle_i + 1, end,k, comparator);
+            merge(a, start, middle_i, end, comparator);
+        }
     }
 }
 
@@ -86,30 +81,24 @@ void merge(void **a, int start, int middle_i, int end, int (*comparator)(const v
     i = 0;
     j = 0;
     k = start;
-    while (i < n1 && j < n2)
-    {
-        if (comparator(left_half[i], right_half[j]) < 0 || comparator(left_half[i], right_half[j]) == 0)
-        {
+    while (i < n1 && j < n2){
+        if (comparator(left_half[i], right_half[j]) < 0 || comparator(left_half[i], right_half[j]) == 0){
             a[k] = left_half[i];
             i++;
-        }
-        else
-        {
+        }else{
             a[k] = right_half[j];
             j++;
         }
         k++;
     }
 
-    while (i < n1)
-    {
+    while (i < n1){
         a[k] = left_half[i];
         i++;
         k++;
     }
 
-    while (j < n2)
-    {
+    while (j < n2){
         a[k] = right_half[j];
         j++;
         k++;

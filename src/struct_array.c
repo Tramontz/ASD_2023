@@ -66,14 +66,12 @@ void struct_array_add(StructArray *struct_array, void* element){
   }
 
   if(struct_array->el_num >= struct_array->array_capacity){
-    printf("array too short, must be reallocate \n");
     struct_array->array = (void**)realloc(struct_array->array,2*(struct_array->array_capacity)*sizeof(void*));
     if(struct_array->array == NULL){
       fprintf(stderr,"struct_array_add: unable to reallocate memory to host the new element");
       exit(EXIT_FAILURE);
     }
     struct_array->array_capacity = 2*struct_array->array_capacity;
-    printf("reallocation complete \n");
   }
 
   (struct_array->array)[struct_array->el_num] = element;
