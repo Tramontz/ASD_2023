@@ -79,18 +79,13 @@ static int precedes_record_float_field(void* r1_p,void* r2_p){
 /*it take in imput a file, parse it using ';' separator to recognise the 4 field, an put them
 into an array of record object
 */
-static void load_array(const char* file_name, StructArray* array){
+static void load_array(FILE *in_file, StructArray* array){
   char *read_line_p;
   char buffer[1024];
   int buf_size = 1024;
-  FILE *fp;
-  printf("\nLoading data from file...\n");
-  fp = fopen(file_name,"r");
-  if(fp == NULL){
-    fprintf(stderr,"main: unable to open the file");
-    exit(EXIT_FAILURE);
-  }
-  while(fgets(buffer,buf_size,fp) != NULL){  
+  printf("Loading data from file...\n");
+
+  while(fgets(buffer,buf_size,in_file) != NULL){  
     read_line_p = malloc((strlen(buffer)+1)*sizeof(char));
     if(read_line_p == NULL){
       fprintf(stderr,"main: unable to allocate memory for the read line");
@@ -129,10 +124,23 @@ static void load_array(const char* file_name, StructArray* array){
     struct_array_add(array, record_p);
     free(read_line_p);
   }
-  fclose(fp);
-  printf("\nData loaded\n");
+  fclose(in_file);
+  printf("Data loaded\n");
 }
-/*free memori from string, record and StructArray object
+
+static void write_array(FILE *out_file, StructArray *array){
+  printf("writing file...\n");
+  record *array_element=malloc(sizeof (record));
+  void ** record_array=struct_array_get(array);    
+  for (int i = 0; i < struct_array_size(array); i++){
+    array_element = (record *)record_array[i];
+    fprintf(out_file, "%d;%s;%d;%f\n", array_element->id,array_element->string_field_1,array_element->integer_field_2,array_element->float_field_3);
+  }
+  printf("file created\n\n");
+  fclose(out_file);
+}
+
+/*free memory from string, record and StructArray object
 */
 static  void free_array(StructArray* array) {
   unsigned long  el_num =  struct_array_size(array);
@@ -142,19 +150,6 @@ static  void free_array(StructArray* array) {
    free(array_element);
  }
  struct_array_free_memory(array);
-}
-
-static void write_array(char* path, StructArray *array){
-  printf("writing file...\n");
-  FILE *ordered = fopen(path, "w");
-  record *array_element=malloc(sizeof (record));
-  void ** record_array=struct_array_get(array);    
-  for (int i = 0; i < struct_array_size(array); i++){
-    array_element = (record *)record_array[i];
-    fprintf(ordered, "%d;%s;%d;%f\n", array_element->id,array_element->string_field_1,array_element->integer_field_2,array_element->float_field_3);
-  }
-  printf("file created\n");
-  fclose(ordered);
 }
 /*it take a StructArray as imput and print all the field of 
 every single object contained in the array of record
@@ -173,18 +168,22 @@ static  void print_array(StructArray* array){
 and order the array of record contained in the struct array based on the field
 and using k to decide when use merge sort annd when use the insertion sort
 */
-static void sort_records(StructArray* array, size_t k, size_t field) {
+static void sort_records(FILE *infile, FILE *outfile, size_t k, size_t field){
+  StructArray* array = struct_array_create();
+  load_array(infile,array);
+  clock_t begin = clock();
+
   switch (field) {
   case 1:
-    printf("sorting by string...");
+    printf("sorting by string...\n");
     merge_binary_insertion_sort(struct_array_get(array), struct_array_size(array), k, precedes_record_string_field);
     break;
   case 2:
-    printf("sorting by integer...");
+    printf("sorting by integer...\n");
     merge_binary_insertion_sort(struct_array_get(array), struct_array_size(array),  k, precedes_record_int_field);
     break;
   case 3:
-    printf("sorting by float...");
+    printf("sorting by float...\n");
     merge_binary_insertion_sort(struct_array_get(array), struct_array_size(array), k, precedes_record_float_field);
     break;
   default:
@@ -192,7 +191,11 @@ static void sort_records(StructArray* array, size_t k, size_t field) {
     exit(EXIT_FAILURE);
     break;
   }  
+  clock_t end = clock();
+  printf("\ntotal time with: field=%d | K=%d -> %f\n\n",field,k,(double)(end-begin)/CLOCKS_PER_SEC); 
 
+  write_array(outfile,array);
+  free_array(array);
 }
 
 /*It should be invoked with 4 param:
@@ -210,19 +213,19 @@ int main(int argc, char const *argv[]) {
   size_t k = strtol(argv[3], &p, 10);
   size_t field = strtol(argv[4], &p, 10);
 
-  printf("\nfile to order: %s\n",argv[1]);
-  printf("\noutput file location: %s\n", argv[2]);
-  printf("\nK value selected: %d\n", k);
-  printf("\nfield to order: %d \npress enter to start, ctrl+c to exit", field);
-  getchar();
+  printf("file to order: %s\n",argv[1]);
+  printf("output file location: %s\n", argv[2]);
+  printf("K value selected: %d\n", k);
+  printf("field to order: %d \n\n", field);
   
-  StructArray* array = struct_array_create();    
-  load_array(argv[1], array);
-  clock_t begin = clock();
-  sort_records(array, k, field);
-  clock_t end = clock();
-  printf("total time: %f\n",(double)(end-begin)/CLOCKS_PER_SEC); 
-  write_array(argv[2],array);
-  free_array(array);
+  FILE *in_file;
+  FILE *out_file;
+  in_file = fopen(argv[1],"r");
+  out_file = fopen(argv[2],"a");
+  if(in_file == NULL || out_file == NULL){
+    fprintf(stderr,"main: unable to open the file");
+    exit(EXIT_FAILURE);
+  }
+  sort_records(in_file, out_file, k, field);  
   return EXIT_SUCCESS;
 }
