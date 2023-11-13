@@ -30,6 +30,8 @@ int main() {
         insert_skiplist(int_list, int_keys[i]);
         //print_skiplist(int_list, 0); // Pass 0 for integers
     }
+const void* found=search_skiplist(int_list,9);
+    if(found!=NULL) printf("FOUNDED\n");
     clear_skiplist(int_list);
 
     /*SkipList *str_list;
