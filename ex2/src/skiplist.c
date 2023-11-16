@@ -70,7 +70,7 @@ void new_skiplist(SkipList **list, size_t max_height, int (*compare)(const void 
 void clear_skiplist(SkipList **list) {
     if (*list) {
         for (size_t i = 0; i < (*list)->max_height; i++) {
-            Node *current = &(*list)->heads[i];
+            Node *current = (*list)->heads[i];
             while (current) {
                 Node *temp = current;
                 current = current->next[0];
@@ -153,3 +153,31 @@ const void *search_skiplist(SkipList *list, void *item) {
     }
 }
 
+void print_skiplist(SkipList **list) {
+    if (!*list) {
+        printf("La SkipList è vuota.\n");
+        return;
+    }
+
+    printf("SkipList:\n");
+
+    for (size_t level = (*list)->max_height; level > 0; level--) {
+        printf("Livello %lu: ", level);
+
+        Node *current = (*list)->heads[level - 1];
+
+        while (current) {
+            printf("%d [", current->item);
+
+            // Print all levels of the current node
+            for (size_t i = 0; i < current->size; i++) {
+                printf("%lu ", i + 1);
+            }
+
+            printf("] ");
+            current = current->next[0];
+        }
+
+        printf("\n");
+    }
+}

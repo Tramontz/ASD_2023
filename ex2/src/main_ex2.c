@@ -4,8 +4,8 @@
 #include <time.h>
 
 int compare_int(const void *a, const void *b) {
-    int x = *(int *)a;
-    int y = *(int *)b;
+    int x = (int *)a;
+    int y = (int *)b;
     return (x - y);
 }
 
@@ -16,35 +16,6 @@ int compare_strings(const void *a, const void *b) {
     return strcmp(x, y);
 }
 
-  
-void print_skiplist(SkipList **list) {
-    if (!*list) {
-        printf("La SkipList è vuota.\n");
-        return;
-    }
-
-    printf("SkipList:\n");
-
-    for (size_t level = (*list)->max_height; level > 0; level--) {
-        printf("Livello %lu: ", level);
-
-        Node *current = (*list)->heads[level - 1];
-
-        while (current) {
-            printf("%d [", *((int *)current->item));
-
-            // Print all levels of the current node
-            for (size_t i = 0; i < current->size; i++) {
-                printf("%lu ", i + 1);
-            }
-
-            printf("] ");
-            current = current->next[0];
-        }
-
-        printf("\n");
-    }
-}
 
 int main() {
     srand((unsigned)time(NULL));
@@ -80,7 +51,3 @@ const void* found=search_skiplist(int_list,9);
 */
     return 0;
 }
-
-
-
-
