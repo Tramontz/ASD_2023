@@ -16,6 +16,7 @@ typedef struct _SkipList {
     int (*compare)(const void *, const void *);
 } SkipList;
 
+
 double random_probability() {
     return (double)rand() / RAND_MAX;
 }
@@ -69,7 +70,7 @@ void new_skiplist(SkipList **list, size_t max_height, int (*compare)(const void 
 void clear_skiplist(SkipList **list) {
     if (*list) {
         for (size_t i = 0; i < (*list)->max_height; i++) {
-            Node *current = (*list)->heads[i];
+            Node *current = &(*list)->heads[i];
             while (current) {
                 Node *temp = current;
                 current = current->next[0];
@@ -84,23 +85,29 @@ void clear_skiplist(SkipList **list) {
 }
 
 void insert_skiplist(SkipList *list, void *item) {
-    Node **update = (Node **)malloc((list->max_height + 1) * sizeof(Node *));
+    Node **update = (Node **)calloc((list->max_height + 1), sizeof(Node *));
     if (!update) {
         fprintf(stderr, "Errore nell'allocazione dell'array di aggiornamento.\n");
         exit(EXIT_FAILURE);
     }
 
-    Node *x = list->heads;
-
+    Node *x = &list->heads;
+printf("sono prima del for \n");
+if(x==NULL) printf("x è null, quindi list->heads è null\n");
     // loop invariant: x[i]->item <= item or item < first element of level i in list
     for (size_t i = list->max_level; i > 0; i--) {
+        printf("sono ne for con i=%d\n",i);
+
         while (x->next[i - 1] != NULL && list->compare(x->next[i - 1]->item, item) <= 0) {
+            printf("sono  nel while= %d \n",list->compare(x->next[i - 1]->item, item));
             x = x->next[i - 1];
         }
+        printf("faccio update con i=%d \n",i);
         update[i] = x;
     }
 
     // loop end: x[1]->item <= item or item < first element in list
+
     x = x->next[0];
 
     if (x != NULL && list->compare(x->item, item) == 0) {
@@ -114,7 +121,8 @@ void insert_skiplist(SkipList *list, void *item) {
 
     if (level > list->max_level) {
         for (size_t i = list->max_level + 1; i <= level; i++) {
-            update[i] = list->heads;
+            printf("inizializzo update max level e level ",i,level);
+            update[i]= &list->heads;
         }
         list->max_level = level;
     }
@@ -122,6 +130,7 @@ void insert_skiplist(SkipList *list, void *item) {
     x = create_node(item, level);
 
     for (size_t i = 1; i <= level; i++) {
+        printf("i%d , level%d\n",i,level );
         x->next[i - 1] = update[i]->next[i - 1];
         update[i]->next[i - 1] = x;
     }
@@ -143,3 +152,4 @@ const void *search_skiplist(SkipList *list, void *item) {
         return NULL;
     }
 }
+
