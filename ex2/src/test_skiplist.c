@@ -21,7 +21,7 @@ int compare_string(const void *a, const void *b) {
 void testEmptySkipList() {
     printf("1ui 1\n");
     SkipList *list;
-        printf("1ui 2\n");
+    printf("1ui 2\n");
 
     new_skiplist(&list, 10, compare_int);
     TEST_ASSERT_NULL(search_skiplist(list, 42));
@@ -58,11 +58,11 @@ void testSkipListWithStringElements() {
     new_skiplist(&list, 10, compare_string);
 
     char *words[] = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon",
-                           "mango", "nectarine", "orange", "pear", "quince", "raspberry", "strawberry", "tangerine", "uriku",
-                           "vitis", "watermelon", "xigua", "yuzu", "zucchini", "apricot", "blueberry", "cranberry", "dragonfruit",
-                           "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon", "mango", "nectarine", "orange", "pear",
-                           "quince", "raspberry", "strawberry", "tangerine", "uriku", "vitis", "watermelon", "xigua", "yuzu",
-                           "zucchini"};
+    "mango", "nectarine", "orange", "pear", "quince", "raspberry", "strawberry", "tangerine", "uriku",
+    "vitis", "watermelon", "xigua", "yuzu", "zucchini", "apricot", "blueberry", "cranberry", "dragonfruit",
+    "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon", "mango", "nectarine", "orange", "pear",
+    "quince", "raspberry", "strawberry", "tangerine", "uriku", "vitis", "watermelon", "xigua", "yuzu",
+    "zucchini"};
 
     for (int i = 0; i < sizeof(words) / sizeof(words[0]); i++) {
         insert_skiplist(list, words[i]);

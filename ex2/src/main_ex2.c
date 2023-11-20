@@ -59,32 +59,27 @@ void find_errors(FILE *dictfile, FILE *textfile, size_t max_height) {
 
         readLine = strdup(word);  // Alloca memoria per la copia della parola
         insert_skiplist(dictionary, readLine);
-        //print_skiplist(&dictionary, 1);
     }   
     end = clock();
     printf("\ntotal insert time with: max_height=%d | time: %f\n\n",max_height,(double)(end-begin)/CLOCKS_PER_SEC);
 
-
-    // Stampa la lista completa
-    //print_skiplist(&dictionary, 1);
     begin = clock();
-
     while (fscanf(textfile, "%s", text_word) == 1) {
         size_t leng = strlen(text_word);
         if (leng > 0 && !isalpha(text_word[leng - 1])) {
             text_word[leng - 1] = '\0';
         }
         for (size_t i = 0; i < leng; i++) {
-            text_word[i]=tolower(text_word[i]);            
+            text_word[i]=tolower(text_word[i]);//elimina eventuali Uppercase        
         }
-            
-            if (search_skiplist(dictionary, text_word) == NULL) {
-                printf("%s\n", text_word);
-            }          
-        }
-        end = clock();
-        printf("\ntotal search time with: max_height=%d | time: %f\n\n",max_height,(double)(end-begin)/CLOCKS_PER_SEC);
+
+        if (search_skiplist(dictionary, text_word) == NULL) {
+            printf("%s\n", text_word);
+        }          
+    }
+    end = clock();
+    printf("\ntotal search time with: max_height=%d | time: %f\n\n",max_height,(double)(end-begin)/CLOCKS_PER_SEC);
 
     // Dealloca la SkipList dopo averla utilizzata
-        clear_skiplist(&dictionary);
-    }
+    clear_skiplist(&dictionary);
+}
