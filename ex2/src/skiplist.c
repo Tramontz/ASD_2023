@@ -69,18 +69,16 @@ void new_skiplist(SkipList **list, size_t max_height, int (*compare)(const void 
 
 void clear_skiplist(SkipList **list) {
     if (*list) {
-            Node *current = (*list)->heads[0];
-            while (current) {
-                printf("cancello=%d\n",current->item);
-                Node *temp = current;
-                current = current->next[0];
-                if(current)printf("current=%d\n",current->item);
-                free(temp->next);
-                free(temp);
-            }
+        Node *current = (*list)->heads[0];
+        while (current) {
+            Node *temp = current;
+            current = current->next[0];
+            free(temp->next);
+            free(temp);
+        }
         free(current);       
         for (size_t i = 0; i< (*list)->max_height; i++) (*list)->heads[i] = NULL;
-        free((*list)->heads);
+            free((*list)->heads);
         free(*list);
         *list = NULL; // Imposta il puntatore a NULL dopo la deallocazione
     }
@@ -123,11 +121,9 @@ void insert_skiplist(SkipList *list, void *item) {
     x = create_node(item, level);
 
     for (size_t i = 1; i <= level; i++) {
-        printf("i%d , level%d\n",i,level );
         x->next[i - 1] = update[i]->next[i - 1];
         update[i]->next[i - 1] = x;
     }
-
     free(update);
 }
 
@@ -146,7 +142,7 @@ const void *search_skiplist(SkipList *list, void *item) {
     }
 }
 
-void print_skiplist(SkipList **list) {
+void print_skiplist(SkipList **list, int isInt) {
     if (!*list) {
         printf("La SkipList è vuota.\n");
         return;
@@ -161,13 +157,14 @@ void print_skiplist(SkipList **list) {
         Node *current = (*list)->heads[level-1];
 
         while (current) {
-            printf("%d [", current->item);
-
+         if(isInt==0) printf("%d [", current->item);
+         else printf("%s [", current->item);
             // Print all levels of the current node
             for (size_t i = 0; i < current->size; i++) {
                 item=0;
                 if(current->next[i]) item=current->next[i]->item;
-                printf("L%lu->%d ", i + 1, item);
+                if(isInt==0)printf("L%lu->%d ", i + 1, item);
+                else printf("L%lu->%s ", i + 1, item);
             }
 
             printf("] ");

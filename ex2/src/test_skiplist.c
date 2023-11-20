@@ -13,7 +13,9 @@ int compare_int(const void *a, const void *b) {
 
 // Comparison function for stringhe
 int compare_string(const void *a, const void *b) {
-    return strcmp((const char *)a, (const char *)b);
+    char **x = (char **)a;
+    char **y = (char **)b;
+    return strcmp(x, y);
 }
 
 void testEmptySkipList() {
@@ -38,7 +40,7 @@ void testSkipListWithSingleElement() {
 
 void testSkipListWithIntElements() {
     SkipList *list;
-    new_skiplist(list, 10, compare_int);
+    new_skiplist(&list, 10, compare_int);
 
     for (int i = 1; i <= 50; i++) {
         insert_skiplist(list, i);
@@ -55,16 +57,16 @@ void testSkipListWithStringElements() {
     SkipList *list;
     new_skiplist(&list, 10, compare_string);
 
-    const char *words[] = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon",
+    char *words[] = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon",
                            "mango", "nectarine", "orange", "pear", "quince", "raspberry", "strawberry", "tangerine", "uriku",
                            "vitis", "watermelon", "xigua", "yuzu", "zucchini", "apricot", "blueberry", "cranberry", "dragonfruit",
                            "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon", "mango", "nectarine", "orange", "pear",
                            "quince", "raspberry", "strawberry", "tangerine", "uriku", "vitis", "watermelon", "xigua", "yuzu",
                            "zucchini"};
 
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < sizeof(words) / sizeof(words[0]); i++) {
         insert_skiplist(list, words[i]);
-    }
+    }print_skiplist(&list, 1);
 
     const char *searchWord = "fig";
     const void *result = search_skiplist(list, searchWord);
@@ -76,10 +78,10 @@ void testSkipListWithStringElements() {
 int main() {
     UNITY_BEGIN();
 
-    RUN_TEST(testEmptySkipList);
-    RUN_TEST(testSkipListWithSingleElement);
+    //RUN_TEST(testEmptySkipList);
+    //RUN_TEST(testSkipListWithSingleElement);
     //RUN_TEST(testSkipListWithIntElements);
-    //RUN_TEST(testSkipListWithStringElements);
+    RUN_TEST(testSkipListWithStringElements);
 
     UNITY_END();
 }

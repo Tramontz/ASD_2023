@@ -1,53 +1,90 @@
-#include "skiplist.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include "skiplist.h"
 
-int compare_int(const void *a, const void *b) {
-    int x = (int *)a;
-    int y = (int *)b;
-    return (x - y);
-}
-
-    // Comparison function for strings
-int compare_strings(const void *a, const void *b) {
+int compare_string(const void *a, const void *b) {
     char **x = (char **)a;
     char **y = (char **)b;
     return strcmp(x, y);
 }
 
+void find_errors(FILE *dictfile, FILE *textfile, size_t max_height);
 
-int main() {
-    srand((unsigned)time(NULL));
- 
-    SkipList *int_list;
-    new_skiplist(&int_list, 10, compare_int);
-
-    int int_keys[] = {3, 6, 1, 8, 2, 7, 5, 4, 9};
-
-    printf("Inserimento nella SkipList con interi: %d \n",sizeof(int_keys) / sizeof(int_keys[0]));
-    for (size_t i = 0; i < sizeof(int_keys) / sizeof(int_keys[0]); i++) {
-      printf("Inserimento %d\n: ", int_keys[i]);
-        insert_skiplist(int_list, int_keys[i]);
-    }
-print_skiplist(&int_list);
-const void* found=search_skiplist(int_list,9);
-    if(found!=NULL) printf("FOUNDED\n");
-    clear_skiplist(&int_list);
-
-    /*SkipList *str_list;
-    new_skiplist(&str_list, 10, compare_string);
-
-    char *str_keys[] = {"apple", "banana", "cherry", "date", "fig", "grape", "kiwi"};
-
-    printf("\nInserimento nella SkipList con stringhe:\n");
-    for (size_t i = 0; i < sizeof(str_keys) / sizeof(str_keys[0]); i++) {
-        insert_skiplist(str_list, str_keys[i]);
-        printf("Inserimento %s: ", str_keys[i]);
-        print_skiplist(str_list, 1); // Pass 1 for strings
-    }
-
-    clear_skiplist(&str_list);
-*/
-    return 0;
+int main(int argc, char const *argv[]) {
+  if (argc < 3) {
+    printf("Usage: %s <in file>, %s <out file>, %d <K value>,\n", argv[1],argv[2],argv[3]);
+    exit(EXIT_FAILURE);
 }
+
+char *p;
+size_t max_height =strtol(argv[3], &p, 10);
+
+FILE *dictfile = fopen(argv[1], "r");
+if (!dictfile) {
+    perror("Errore nell'apertura del file del dizionario");
+    return EXIT_FAILURE;
+}
+
+FILE *textfile = fopen(argv[2], "r");
+if (!textfile) {
+    perror("Errore nell'apertura del file da correggere");
+    fclose(dictfile);
+    return EXIT_FAILURE;
+}
+
+find_errors(dictfile, textfile, max_height);
+
+fclose(dictfile);
+fclose(textfile);
+
+return EXIT_SUCCESS;
+}
+
+void find_errors(FILE *dictfile, FILE *textfile, size_t max_height) {
+    SkipList *dictionary;
+    new_skiplist(&dictionary, max_height, compare_string);
+    clock_t begin,end;
+    char word[256];
+    char text_word[256];
+    char *readLine;
+
+    begin = clock();
+    while (fgets(word, sizeof(word), dictfile) != NULL) {
+        size_t len = strlen(word);
+        if (len > 0 && word[len - 1] == '\n') {
+            word[len - 1] = '\0'; // Rimuovi il newline
+        }
+
+        readLine = strdup(word);  // Alloca memoria per la copia della parola
+        insert_skiplist(dictionary, readLine);
+        //print_skiplist(&dictionary, 1);
+    }   
+    end = clock();
+    printf("\ntotal insert time with: max_height=%d | time: %f\n\n",max_height,(double)(end-begin)/CLOCKS_PER_SEC);
+
+
+    // Stampa la lista completa
+    //print_skiplist(&dictionary, 1);
+    begin = clock();
+
+    while (fscanf(textfile, "%s", text_word) == 1) {
+        size_t leng = strlen(text_word);
+        if (leng > 0 && !isalpha(text_word[leng - 1])) {
+            text_word[leng - 1] = '\0';
+        }
+        for (size_t i = 0; i < leng; i++) {
+            text_word[i]=tolower(text_word[i]);            
+        }
+            
+            if (search_skiplist(dictionary, text_word) == NULL) {
+                printf("%s\n", text_word);
+            }          
+        }
+        end = clock();
+        printf("\ntotal search time with: max_height=%d | time: %f\n\n",max_height,(double)(end-begin)/CLOCKS_PER_SEC);
+
+    // Dealloca la SkipList dopo averla utilizzata
+        clear_skiplist(&dictionary);
+    }

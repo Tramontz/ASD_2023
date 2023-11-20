@@ -18,4 +18,7 @@ void insert_skiplist(SkipList *list, void *item);
 // Verifica se un elemento è presente nella SkipList
 const void *search_skiplist(SkipList *list, void *item);
 
+void print_skiplist(SkipList **list, int isInt);
+
+
 #endif
